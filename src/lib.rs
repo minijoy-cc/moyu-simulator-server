@@ -1,3 +1,3 @@
-mod controllers;
+pub mod controllers;
 pub mod domain;
-mod repositories;
+pub mod repositories;

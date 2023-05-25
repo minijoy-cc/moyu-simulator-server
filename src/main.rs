@@ -1,5 +1,6 @@
 use axum::{http::StatusCode, response::IntoResponse, routing::post, Json, Router};
 use moyu_simulator_server::domain::user::User;
+use moyu_simulator_server::repositories::user_repository::UserRepository;
 use serde::Deserialize;
 use std::net::SocketAddr;
 
@@ -14,10 +15,13 @@ async fn main() {
 }
 
 async fn login(Json(request): Json<LoginRequest>) -> impl IntoResponse {
-    (StatusCode::CREATED, Json(User::new(request.username)))
+    (
+        StatusCode::CREATED,
+        Json(UserRepository::save(User::new(request.name))),
+    )
 }
 
 #[derive(Deserialize)]
 struct LoginRequest {
-    username: String,
+    name: String,
 }
