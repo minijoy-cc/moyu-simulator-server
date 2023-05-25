@@ -1,7 +1,5 @@
-use axum::{http::StatusCode, response::IntoResponse, routing::post, Json, Router};
-use moyu_simulator_server::domain::user::User;
-use moyu_simulator_server::repositories::user_repository::UserRepository;
-use serde::Deserialize;
+use axum::{routing::post, Router};
+use moyu_simulator_server::controllers::auth_controller::login;
 use std::net::SocketAddr;
 
 #[tokio::main]
@@ -12,16 +10,4 @@ async fn main() {
         .serve(app.into_make_service())
         .await
         .unwrap();
-}
-
-async fn login(Json(request): Json<LoginRequest>) -> impl IntoResponse {
-    (
-        StatusCode::CREATED,
-        Json(UserRepository::save(User::new(request.name))),
-    )
-}
-
-#[derive(Deserialize)]
-struct LoginRequest {
-    name: String,
 }
