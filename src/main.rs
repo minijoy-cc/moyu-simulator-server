@@ -1,5 +1,5 @@
 use axum::{routing::post, Router};
-use moyu_simulator_server::controllers::auth_controller::login;
+use moyu_simulator_server::handlers::auth_handler::login;
 use std::net::SocketAddr;
 
 #[tokio::main]
