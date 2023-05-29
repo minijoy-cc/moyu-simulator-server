@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct User {
     id: String,
     username: String,
@@ -22,21 +22,12 @@ impl User {
     }
 
     pub fn login(&self, password: String) -> bool {
-        bcrypt::verify(password, &self.password).unwrap()
+        password == String::from(&self.password)
     }
 
     pub fn new(username: String, password: String) -> User {
-        let hashed_password = bcrypt::hash(password, bcrypt::DEFAULT_COST).unwrap();
         User {
             id: Uuid::new_v4().simple().to_string(),
-            username,
-            password: hashed_password,
-        }
-    }
-
-    pub fn of(id: String, username: String, password: String) -> User {
-        User {
-            id,
             username,
             password,
         }

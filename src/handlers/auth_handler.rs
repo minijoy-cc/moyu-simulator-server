@@ -9,7 +9,7 @@ pub async fn login(Json(request): Json<LoginRequest>) -> ApiResponse<User> {
             if user.login(request.password) {
                 ApiResponse::ok_with_data(user)
             } else {
-                ApiResponse::err(StatusCode::UNAUTHORIZED, "用户名或密码错误".to_string())
+                ApiResponse::err(StatusCode::UNAUTHORIZED, String::from("用户名或密码错误"))
             }
         }
         None => {

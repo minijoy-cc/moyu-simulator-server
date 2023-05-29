@@ -3,45 +3,43 @@ use lazy_static::lazy_static;
 use std::{collections::HashMap, sync::RwLock};
 
 struct DB {
-    id_2_users_mapping: HashMap<String, User>,
-    username_2_id_mapping: HashMap<String, String>,
+    users: HashMap<String, String>,
+    usernames: HashMap<String, String>,
 }
 
 impl DB {
     fn exists(&self, name: &str) -> bool {
-        self.username_2_id_mapping.contains_key(name)
+        self.usernames.contains_key(name)
     }
 
     fn save(&mut self, user: &User) -> bool {
         let name_inserted = self
-            .username_2_id_mapping
+            .usernames
             .insert(user.get_username().to_string(), user.get_id().to_string());
 
-        let user_inserted = self
-            .id_2_users_mapping
-            .insert(user.get_id().to_string(), user.clone());
+        let user_inserted = self.users.insert(
+            user.get_id().to_string(),
+            serde_json::to_string(&user).unwrap(),
+        );
         name_inserted.is_none() && user_inserted.is_none()
     }
 
     fn find(&self, username: &str) -> Option<User> {
-        self.username_2_id_mapping
+        self.usernames
             .get(username)
-            .map(|id| self.id_2_users_mapping.get(id))
+            .map(|id| self.users.get(id))
             .flatten()
-            .map(|user| {
-                User::of(
-                    user.get_id().to_string(),
-                    user.get_username().to_string(),
-                    user.get_password().to_string(),
-                )
+            .map(|user_json_str| {
+                let result = serde_json::from_str(user_json_str);
+                result.unwrap()
             })
     }
 }
 
 lazy_static! {
     static ref LOCK: RwLock<DB> = RwLock::new(DB {
-        id_2_users_mapping: HashMap::new(),
-        username_2_id_mapping: HashMap::new()
+        users: HashMap::new(),
+        usernames: HashMap::new()
     });
 }
 
